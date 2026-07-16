@@ -48,10 +48,12 @@ INSTALLED_APPS = [
     'users',
     'tasks',
     'rest_framework.authtoken',
-    'django_filters'
+    'django_filters',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -139,3 +141,5 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 
 }
+
+CORS_ALLOW_ALL_ORIGINS = True
