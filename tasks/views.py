@@ -8,8 +8,12 @@ from rest_framework.response import Response
 from rest_framework import status, generics
 from .models import Task
 from .serializers import TaskSerializer, RegisterSerializer
+import logging
 
 User = get_user_model()
+
+logger = logging.getLogger(__name__)
+
 
 class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
@@ -23,7 +27,17 @@ class TaskViewSet(viewsets.ModelViewSet):
         return Task.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        task = serializer.save(user=self.request.user)
+        logger.info(f'User {self.request.user} created a new task #{task.id}')
+    def perform_update(self, serializer):
+        task = serializer.save(user=self.request.user)
+        logger.info(f'User {self.request.user} updated task #{task.id}')
+    def perform_destroy(self, instance):
+        task_id = instance.id
+        task_title = instance.title
+        instance.delete()
+        logger.info(f'User {self.request.user} deleted task {task_title} #{task_id}')
+
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
