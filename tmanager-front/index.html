@@ -177,22 +177,24 @@
             }
 
             try {
-                
                 const response = await fetch(`${API_URL}${endpoint}`, options);
                 
-                if (response.status === 401) {
-                    localStorage.removeItem('authToken');
-                    window.location.href = 'login.html';
-                }
                 if (response.status === 204) return null;
                 
                 const contentType = response.headers.get("content-type");
+                let data = null;
                 if (contentType && contentType.includes("application/json")) {
-                    const data = await response.json();
-                    if (!response.ok) throw new Error(data.detail || JSON.stringify(data));
-                    return data;
+                    data = await response.json();
                 }
-                return null;
+
+                if (response.status === 401 || (data && data.detail === "Invalid token.")) {
+                    localStorage.removeItem('authToken');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                if (!response.ok) throw new Error(data?.detail || JSON.stringify(data));
+                return data;
             } catch (err) {
                 mainError.innerText = `Ошибка API: ${err.message}`;
                 mainError.classList.remove('hidden');
