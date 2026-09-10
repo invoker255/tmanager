@@ -177,7 +177,9 @@
             }
 
             try {
-                const response = await fetch(`${API_URL}/api/tasks/${id}/`, options);
+                
+                const response = await fetch(`${API_URL}${endpoint}`, options);
+                
                 if (response.status === 401) {
                     localStorage.removeItem('authToken');
                     window.location.href = 'login.html';
