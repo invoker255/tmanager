@@ -115,7 +115,7 @@
     </div>
 
     <script>
-        const API_URL = 'https://tmanager-frontend.onrender.com';
+        const API_URL = 'https://tmanager-nnb2.onrender.com';
         const token = localStorage.getItem('authToken');
 
         if (!token) {
@@ -203,7 +203,7 @@
         }
 
         async function fetchTasks() {
-            const data = await apiRequest('/tasks/');
+            const data = await apiRequest('/api/tasks/');
             if (data) {
                 if (data.results && Array.isArray(data.results)) {
                     allTasks = data.results;
@@ -346,9 +346,9 @@
             let result;
 
             if (id) {
-                result = await apiRequest(`/tasks/${id}/`, 'PUT', payload);
+                result = await apiRequest(`/api/tasks/${id}/`, 'PUT', payload);
             } else {
-                result = await apiRequest('/tasks/', 'POST', payload);
+                result = await apiRequest('/api/tasks/', 'POST', payload);
             }
 
             if (result !== undefined) {
@@ -364,13 +364,13 @@
 
         async function toggleQuickStatus(id, currentStatus) {
             const nextStatus = currentStatus === 'done' ? 'in_progress' : 'done';
-            const result = await apiRequest(`/tasks/${id}/`, 'PATCH', { status: nextStatus });
+            const result = await apiRequest(`/api/tasks/${id}/`, 'PATCH', { status: nextStatus });
             if (result) fetchTasks();
         }
 
         async function deleteTask(id) {
             if (confirm('Вы уверены, что хотите удалить эту задачу?')) {
-                const response = await fetch(`${API_URL}/tasks/${id}/`, {
+                const response = await fetch(`${API_URL}/api/tasks/${id}/`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Token ${token}` }
                 });
