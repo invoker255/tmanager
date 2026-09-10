@@ -333,29 +333,29 @@
         }
 
         async function handleFormSubmit(e) {
-            e.preventDefault();
-            
-            const payload = {
-                title: fieldTitle.value,
-                description: fieldDescription.value,
-                priority: fieldPriority.value,
-                status: fieldStatus.value
-            };
+    e.preventDefault();
+    
+    const payload = {
+        title: fieldTitle.value,
+        description: fieldDescription.value,
+        priority: fieldPriority.value,
+        status: fieldStatus.value
+    };
 
-            const id = fieldId.value;
-            let result;
+    const taskId = fieldId.value;
+    let result;
 
-            if (id) {
-                result = await apiRequest(`/api/tasks/${id}/`, 'PUT', payload);
-            } else {
-                result = await apiRequest('/api/tasks/', 'POST', payload);
-            }
+    if (taskId) {
+        result = await apiRequest(`/api/tasks/${taskId}/`, 'PUT', payload);
+    } else {
+        result = await apiRequest('/api/tasks/', 'POST', payload);
+    }
 
-            if (result !== undefined) {
-                closeModal();
-                fetchTasks();
-            }
-        }
+    if (result !== undefined) {
+        closeModal();
+        fetchTasks();
+    }
+}
 
         function openEditModal(id) {
             const task = allTasks.find(t => t.id === id);
