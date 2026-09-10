@@ -128,58 +128,57 @@
                 }
             }
 
-            const endpoint = isLoginMode ? `${API_URL}/login/` : `${API_URL}/register/`;
+            const endpoint = isLoginMode ? `${API_URL}/api/login/` : `${API_URL}/api/register/`;
             const payload = { username, password };
             if (!isLoginMode) payload.email = email;
             
             try {
-    const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    });
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
-    const responseText = await response.text();
-    const data = responseText ? JSON.parse(responseText) : {};
+                const responseText = await response.text();
+                const data = responseText ? JSON.parse(responseText) : {};
 
-    if (!response.ok) {
-        let errorMessage = 'Ошибка запроса';
-        if (data.detail) {
-            errorMessage = data.detail;
-        } else if (typeof data === 'object') {
-            errorMessage = Object.entries(data)
-                .map(([key, val]) => `${key}: ${Array.isArray(val) ? val.join(' ') : val}`)
-                .join('<br>');
-        }
-        throw new Error(errorMessage);
-    }
+                if (!response.ok) {
+                    let errorMessage = 'Ошибка запроса';
+                    if (data.detail) {
+                        errorMessage = data.detail;
+                    } else if (typeof data === 'object') {
+                        errorMessage = Object.entries(data)
+                            .map(([key, val]) => `${key}: ${Array.isArray(val) ? val.join(' ') : val}`)
+                            .join('<br>');
+                    }
+                    throw new Error(errorMessage);
+                }
 
-    if (isLoginMode) {
-        localStorage.setItem('authToken', data.token);
-        window.location.href = 'index.html';
-    } else {
-        const loginResponse = await fetch(`${API_URL}/login/`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
-        
-        const loginResponseText = await loginResponse.text();
-        const loginData = loginResponseText ? JSON.parse(loginResponseText) : {};
-        if (loginResponse.ok) {
-            localStorage.setItem('authToken', loginData.token);
-            window.location.href = 'index.html';
-        } else {
-            alert('Регистрация успешна! Теперь войдите в аккаунт.');
-            tabLogin.click();
-            resetSubmitButton();
-        }
-    }
-
-} catch (err) {
-    showError(err.message);
-    resetSubmitButton();
-}
+                if (isLoginMode) {
+                    localStorage.setItem('authToken', data.token);
+                    window.location.href = 'index.html';
+                } else {
+                    const loginResponse = await fetch(`${API_URL}/api/login/`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password })
+                    });
+                    
+                    const loginResponseText = await loginResponse.text();
+                    const loginData = loginResponseText ? JSON.parse(loginResponseText) : {};
+                    if (loginResponse.ok) {
+                        localStorage.setItem('authToken', loginData.token);
+                        window.location.href = 'index.html';
+                    } else {
+                        alert('Регистрация успешна! Теперь войдите в аккаунт.');
+                        tabLogin.click();
+                        resetSubmitButton();
+                    }
+                }
+            } catch (err) {
+                showError(err.message);
+                resetSubmitButton();
+            }
         });
 
         function showError(message) {
