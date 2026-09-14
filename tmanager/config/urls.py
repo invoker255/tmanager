@@ -27,5 +27,6 @@ urlpatterns = [
     path('api/token-auth/', obtain_auth_token),
     path('api/register/', RegisterView.as_view(), name='register'),
     path('api/login/', obtain_auth_token, name='login'),
+    path('api/users/', include('users.urls')),
 
 ]
