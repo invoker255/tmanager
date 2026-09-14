@@ -9,6 +9,7 @@ from rest_framework import status, generics
 from .models import Task
 from .serializers import TaskSerializer, RegisterSerializer
 import logging
+from users.utils import send_verification_email
 
 User = get_user_model()
 
@@ -48,7 +49,7 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-
+        send_verification_email(user)
         token, created = Token.objects.get_or_create(user=user)
 
         return Response({
