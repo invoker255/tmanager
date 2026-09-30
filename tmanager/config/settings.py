@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 import os
+
+from django.conf.global_settings import PASSWORD_RESET_TIMEOUT
 from dotenv import load_dotenv
 
 
@@ -115,12 +117,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 8},
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+    {
+        'NAME': 'user.validators.ComplexityValidator',
     },
 ]
 
@@ -165,6 +171,8 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+PASSWORD_RESET_TIMEOUT_SECONDS = 3600
 
 LOGGING = {
     'version': 1,
