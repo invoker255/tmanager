@@ -33,7 +33,7 @@ class Task(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     deadline = models.DateTimeField(null=True, blank=True)
-
+    reminder_sent=models.BooleanField(default=False)
     def __str__(self):
         return self.title
 
