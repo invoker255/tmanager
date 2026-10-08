@@ -149,25 +149,27 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 AUTH_USER_MODEL = 'users.User'
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'tasks.exceptions.custom_exception_handler',
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
-
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
         'rest_framework.throttling.UserRateThrottle',
     ],
-
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '3/minute',
+        'anon': '30/minute',
         'user': '100/minute',
-    }
+        'auth': '10/minute',
+        'resend': '3/minute',
+    },
 }
 
 CORS_ALLOW_ALL_ORIGINS = True

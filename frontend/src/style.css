@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --canvas: 246 247 249;
+  --ink: 20 24 31;
+  --accent: 36 76 214;
+  --on-accent: 255 255 255;
+  --danger: 190 40 40;
+  --success: 22 128 80;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --canvas: 15 17 21;
+  --ink: 232 234 238;
+  --accent: 125 156 255;
+  --on-accent: 15 17 21;
+  --danger: 255 124 112;
+  --success: 98 205 146;
+}
+
+@layer base {
+  body {
+    @apply bg-canvas font-sans text-base text-ink antialiased;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent;
+  }
+}
+
+@layer components {
+  .field {
+    @apply w-full rounded-none border-0 border-b border-ink/25 bg-transparent px-0 py-2 text-base placeholder:text-ink/40 focus:border-accent focus:outline-none focus:ring-0;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center rounded bg-accent px-4 py-2 text-sm font-medium text-onaccent transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .link-btn {
+    @apply text-sm text-ink/60 underline-offset-4 transition-colors hover:text-ink hover:underline disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .label {
+    @apply mb-1 block text-sm text-ink/60;
+  }
+  .msg-error {
+    @apply whitespace-pre-line text-sm text-danger;
+  }
+  .msg-ok {
+    @apply text-sm text-success;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

@@ -18,24 +18,23 @@ class TaskSerializer(serializers.ModelSerializer):
             'category', 'created_at', 'deadline', 'days_left', 'user'
         ]
 
-    @staticmethod
-    def validate_deadline(value):
+    def validate_deadline(self, value):
         if value and value < timezone.now():
             raise serializers.ValidationError('Deadline date cannot be in the past!')
         return value
-    @staticmethod
-    def get_days_left(_self, obj):
+
+    def get_days_left(self, obj):
         if not obj.deadline:
             return None
-
-        now = timezone.now()
-        delta = obj.deadline - now
-
+        delta = obj.deadline - timezone.now()
         if delta.total_seconds() < 0:
-            return "Missed"
+            return 'Missed'
+        return f'Days left: {delta.days}'
 
-        return f"Days left: {delta.days}"
-
+    def update(self, instance, validated_data):
+        if 'deadline' in validated_data and validated_data['deadline'] != instance.deadline:
+            instance.reminder_sent = False
+        return super().update(instance, validated_data)
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, validators=[validate_password])
