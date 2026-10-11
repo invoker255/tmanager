@@ -3,7 +3,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-ARG VITE_API_URL=https://tmanager-frontend-p27z.onrender.com
+ARG VITE_API_URL=https://tmanager-p27z.onrender.com
 ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 
