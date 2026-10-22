@@ -2,14 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title></title>
-
+    <title>Verify your email address</title>
 </head>
-<body>
-    <h1>Подтвердите вашу эл. почту</h1>
-    <h3>Чтобы защитить аккаунт, подтвердите, что это ваш адрес эл. почты. Это также
-    гарантирует, что важные обновления и уведомления будут отправленны именно вам.</h3>
-    <h3>Подтвердите эл. почту, нажав на ссылку ниже.</h3>
-    <a href="{{ link }}">Подтвердить email</a>
+<body style="font-family: Arial, sans-serif; color: #14181f; line-height: 1.5;">
+    <h2>Verify your email address</h2>
+    <p>Hi {{ user.username }},</p>
+    <p>Confirm that this is your email address to activate your account. The link works for one hour.</p>
+    <p>
+        <a href="{{ link }}" style="display: inline-block; padding: 10px 18px; background: #244cd6; color: #ffffff; text-decoration: none; border-radius: 4px;">Verify email</a>
+    </p>
+    <p>If the button does not work, copy this link into your browser:<br>{{ link }}</p>
+    <p>If you did not create an account, you can ignore this email.</p>
 </body>
 </html>

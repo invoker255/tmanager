@@ -29,7 +29,7 @@ class Command(BaseCommand):
             try:
                 send_deadline_reminder_email(task.user, task)
             except Exception as exc:
-                self.stderr.write(f'Задача {task.id}: {exc}')
+                self.stderr.write(f'Task {task.id}: {exc}')
                 continue
             task.reminder_sent = True
             task.save(update_fields=['reminder_sent'])

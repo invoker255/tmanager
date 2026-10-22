@@ -29,3 +29,11 @@ dist/
 build/
 
 .idea/
+
+.pytest_cache/
+.coverage
+htmlcov/
+
+staticfiles/
+.pytest_cache/
+.coverage

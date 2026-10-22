@@ -2,13 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title></title>
-
+    <title>Task deadline reminder</title>
 </head>
-<body>
-    <h1>Hello, </h1>
-    <h3>Your tasks's deadline is about to expire soon</h3>
-
-    <a href="{{ link }}">Check it</a>
+<body style="font-family: Arial, sans-serif; color: #14181f; line-height: 1.5;">
+    <h2>Your deadline is coming up</h2>
+    <p>Hi {{ user.username }},</p>
+    <p>The task <strong>{{ task.title }}</strong> is due on {{ task.deadline|date:"j M Y, H:i" }} UTC.</p>
+    <p>
+        <a href="{{ link }}" style="display: inline-block; padding: 10px 18px; background: #244cd6; color: #ffffff; text-decoration: none; border-radius: 4px;">Open tasks</a>
+    </p>
+    <p>You can change or turn off reminders in Settings.</p>
 </body>
 </html>

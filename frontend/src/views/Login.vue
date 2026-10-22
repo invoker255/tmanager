@@ -36,8 +36,7 @@ async function submit() {
     }
     router.push({ name: 'dashboard' })
   } catch (e) {
-    const data = e.response?.data
-    needsVerification.value = Boolean(data && data.message && !data.Error)
+        needsVerification.value = e.response?.data?.code === 'email_not_verified'
     error.value = needsVerification.value
       ? 'Your email is not verified yet. Open the link in the email we sent, or request a new one below.'
       : extractError(e, 'Incorrect username or password.')

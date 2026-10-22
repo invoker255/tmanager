@@ -1,25 +1,21 @@
+from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from django.conf import settings
+
 
 def send_verification_email(user):
     token = default_token_generator.make_token(user)
     uid = urlsafe_base64_encode(force_bytes(user.pk))
-    link = f"{settings.FRONTEND_URL}/verify/{uid}/{token}"
-    html_content = render_to_string(
-        "gmail/verify_email.html", {
-        'user': user,
-        'link': link,
-    })
+    link = f'{settings.FRONTEND_URL}/verify/{uid}/{token}'
+    html_content = render_to_string('gmail/verify_email.html', {'user': user, 'link': link})
     email = EmailMessage(
-        'Подтвердите ваш Email',
+        'Verify your email address',
         html_content,
         settings.DEFAULT_FROM_EMAIL,
-        [user.email]
+        [user.email],
     )
-    email.content_subtype='html'
+    email.content_subtype = 'html'
     email.send(fail_silently=False)
-

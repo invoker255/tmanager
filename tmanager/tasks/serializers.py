@@ -1,7 +1,10 @@
-from rest_framework import serializers
-from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.utils import timezone
+from drf_spectacular.utils import extend_schema_field
+from rest_framework import serializers
+
 from .models import Task
 
 User = get_user_model()
@@ -15,7 +18,7 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = [
             'id', 'title', 'description', 'status', 'priority',
-            'category', 'created_at', 'deadline', 'days_left', 'user'
+            'category', 'created_at', 'deadline', 'days_left', 'user',
         ]
 
     def validate_deadline(self, value):
@@ -23,6 +26,7 @@ class TaskSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Deadline date cannot be in the past!')
         return value
 
+    @extend_schema_field({'type': 'string', 'nullable': True, 'example': 'Days left: 3'})
     def get_days_left(self, obj):
         if not obj.deadline:
             return None
@@ -36,17 +40,35 @@ class TaskSerializer(serializers.ModelSerializer):
             instance.reminder_sent = False
         return super().update(instance, validated_data)
 
+
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, validators=[validate_password])
+    password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
         fields = ['username', 'email', 'password']
 
+    def validate(self, attrs):
+        candidate = User(username=attrs.get('username', ''), email=attrs.get('email', ''))
+        try:
+            validate_password(attrs['password'], candidate)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError({'password': list(exc.messages)})
+        return attrs
+
     def create(self, validated_data):
-        password = validated_data.pop('password', None)
+        password = validated_data.pop('password')
         email = validated_data.pop('email', '')
+        return User.objects.create_user(email=email, password=password, **validated_data)
 
-        user = User.objects.create_user(email=email, password=password, **validated_data)
 
-        return user
+class RegisteredUserSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    username = serializers.CharField()
+    email = serializers.EmailField()
+
+
+class RegisterResponseSerializer(serializers.Serializer):
+    user = RegisteredUserSerializer()
+    email_sent = serializers.BooleanField()
+    message = serializers.CharField()

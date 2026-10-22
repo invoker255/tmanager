@@ -26,9 +26,37 @@ class ChangePasswordSerializer(serializers.Serializer):
 
     def validate_old_password(self, value):
         if not self.context['request'].user.check_password(value):
-            raise serializers.ValidationError('Неверный текущий пароль')
+            raise serializers.ValidationError('Current password is incorrect.')
         return value
 
     def validate_new_password(self, value):
         validate_password(value, self.context['request'].user)
         return value
+
+
+class LoginRequestSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(style={'input_type': 'password'})
+
+
+class TokenResponseSerializer(serializers.Serializer):
+    token = serializers.CharField()
+    message = serializers.CharField()
+
+
+class MessageSerializer(serializers.Serializer):
+    message = serializers.CharField()
+
+
+class ErrorSerializer(serializers.Serializer):
+    Error = serializers.CharField()
+    code = serializers.CharField(required=False)
+
+
+class VerifyEmailRequestSerializer(serializers.Serializer):
+    uid = serializers.CharField()
+    token = serializers.CharField()
+
+
+class ResendVerificationRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()

@@ -9,6 +9,7 @@ const resending = ref(false)
 const error = ref('')
 const info = ref('')
 const registered = ref(false)
+const emailFailed = ref(false)
 
 async function submit() {
   error.value = ''
@@ -19,7 +20,8 @@ async function submit() {
   }
   loading.value = true
   try {
-    await authApi.register({ username: form.username, email: form.email, password: form.password })
+    const { data } = await authApi.register({ username: form.username, email: form.email, password: form.password })
+    emailFailed.value = data.email_sent === false
     registered.value = true
   } catch (e) {
     error.value = extractError(e)
@@ -34,6 +36,7 @@ async function resend() {
   resending.value = true
   try {
     await authApi.resendVerification(form.email)
+    emailFailed.value = false
     info.value = 'Verification email sent again.'
   } catch (e) {
     error.value = extractError(e)
@@ -46,7 +49,10 @@ async function resend() {
 <template>
   <AuthLayout title="Create account" subtitle="It takes a minute.">
     <div v-if="registered" class="space-y-6">
-      <p>We sent a verification link to <span class="font-medium">{{ form.email }}</span>. Open it to activate your account, then log in.</p>
+      <p v-if="emailFailed" class="msg-error" role="alert">
+        Your account was created, but we could not send the verification email. Use the button below to try again.
+      </p>
+      <p v-else>We sent a verification link to <span class="font-medium">{{ form.email }}</span>. Open it to activate your account, then log in.</p>
       <p v-if="info" class="msg-ok" role="status">{{ info }}</p>
       <p v-if="error" class="msg-error" role="alert">{{ error }}</p>
       <RouterLink to="/login" class="btn w-full">Go to log in</RouterLink>

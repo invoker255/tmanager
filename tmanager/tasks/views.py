@@ -2,8 +2,8 @@ import logging
 
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema
 from rest_framework import generics, permissions, status, viewsets
-from rest_framework.authtoken.models import Token
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -12,13 +12,14 @@ from rest_framework.throttling import ScopedRateThrottle
 from users.utils import send_verification_email
 
 from .models import Task
-from .serializers import RegisterSerializer, TaskSerializer
+from .serializers import RegisterResponseSerializer, RegisterSerializer, TaskSerializer
 
 User = get_user_model()
 
 logger = logging.getLogger(__name__)
 
 
+@extend_schema(tags=['Tasks'])
 class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -29,6 +30,8 @@ class TaskViewSet(viewsets.ModelViewSet):
     ordering = ['-created_at']
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Task.objects.none()
         return Task.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
@@ -36,7 +39,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         logger.info(f'User {self.request.user} created a new task #{task.id}')
 
     def perform_update(self, serializer):
-        task = serializer.save(user=self.request.user)
+        task = serializer.save()
         logger.info(f'User {self.request.user} updated task #{task.id}')
 
     def perform_destroy(self, instance):
@@ -54,12 +57,23 @@ class RegisterView(generics.CreateAPIView):
     throttle_scope = 'auth'
     serializer_class = RegisterSerializer
 
+    @extend_schema(
+        tags=['Auth'],
+        summary='Register a new account',
+        request=RegisterSerializer,
+        responses={201: RegisterResponseSerializer},
+    )
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        send_verification_email(user)
-        token, _ = Token.objects.get_or_create(user=user)
+
+        email_sent = True
+        try:
+            send_verification_email(user)
+        except Exception:
+            logger.exception('Failed to send verification email to user %s', user.pk)
+            email_sent = False
 
         return Response({
             'user': {
@@ -67,6 +81,6 @@ class RegisterView(generics.CreateAPIView):
                 'username': user.username,
                 'email': user.email,
             },
-            'token': token.key,
+            'email_sent': email_sent,
             'message': 'User registered successfully',
         }, status=status.HTTP_201_CREATED)
