@@ -2,8 +2,8 @@
 
 A full-stack task manager with email verification, deadline reminders and a REST API. Built as a portfolio project: Django REST Framework on the backend, Vue 3 on the frontend, PostgreSQL, Docker, deployed on Render.
 
-**Live demo:** <add your Render frontend URL here>
-**API docs (Swagger):** <add your Render backend URL here>/api/docs/
+**Live demo:** https://tmanager-frontend-gxp6.onrender.com
+**API docs (Swagger):** https://tmanager-p27z.onrender.com/api/docs/
 
 ## Features
 
